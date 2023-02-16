@@ -2112,9 +2112,15 @@ int main(int argc, char **argv_orig, char **envp) {
 
     }
 
+    // printf("original fsrv mapsize_1: %u\n",afl->fsrv.map_size);
+    // printf("cmplog fsrv mapsize_1: %u\n",afl->cmplog_fsrv.map_size);
+
     u32 new_map_size =
         afl_fsrv_get_mapsize(&afl->cmplog_fsrv, afl->argv, &afl->stop_soon,
                              afl->afl_env.afl_debug_child);
+    
+    // printf("cmplog fsrv mapsize_2: %u\n",afl->cmplog_fsrv.map_size);
+    // printf("original fsrv mapsize_2: %u\n",afl->fsrv.map_size);
 
     // only reinitialize when it needs to be larger
     if (map_size < new_map_size) {
@@ -2169,8 +2175,23 @@ int main(int argc, char **argv_orig, char **envp) {
     afl->hastemode_fsrv.hastemode_binary = afl->hastemode_binary;
     afl->hastemode_fsrv.init_child_func = hastemode_exec_child;
 
-    afl_fsrv_start(&afl->hastemode_fsrv, afl->argv, &afl->stop_soon,
+    if ((map_size <= DEFAULT_SHMEM_SIZE ||
+         afl->hastemode_fsrv.map_size < map_size) &&
+        !afl->non_instrumented_mode && !afl->fsrv.qemu_mode &&
+        !afl->fsrv.frida_mode && !afl->unicorn_mode && !afl->fsrv.cs_mode &&
+        !afl->afl_env.afl_skip_bin_check) {
+
+      afl->hastemode_fsrv.map_size = MAX(map_size, (u32)DEFAULT_SHMEM_SIZE);
+      char vbuf[16];
+      snprintf(vbuf, sizeof(vbuf), "%u", afl->hastemode_fsrv.map_size);
+      setenv("AFL_MAP_SIZE", vbuf, 1);
+
+    }
+
+    u32 new_map_size = afl_fsrv_get_mapsize(&afl->hastemode_fsrv, afl->argv, &afl->stop_soon,
                     afl->afl_env.afl_debug_child);
+    
+    printf("new fsrv mapsize: %u , old mapsize: %u\n", new_map_size, map_size);
 
     OKF("Hastemode forkserver successfully started");
 
