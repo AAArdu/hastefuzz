@@ -305,6 +305,7 @@ BEGIN {
     echo "[!] Trying to obtain the map size of the target ..."
     get_map_size = "AFL_DUMP_MAP_SIZE=1 " target_bin
     get_map_size | getline mapsize
+    mapsize = 900000
     if (mapsize && mapsize > 65535 && mapsize < 100000000) {
       AFL_MAP_SIZE = "AFL_MAP_SIZE="mapsize" "
       print "[+] Setting "AFL_MAP_SIZE

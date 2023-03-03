@@ -199,6 +199,24 @@ bool AFLCoverage::runOnModule(Module &M) {
 
 #endif
 
+
+if (getenv("AFL_DEBUG")) debug = 1;
+
+if ((isatty(2) && !getenv("AFL_QUIET")) || getenv("AFL_DEBUG") != NULL) {
+
+  SAYF(cCYA "afl-llvm-pass" VERSION cRST
+            " by <lszekeres@google.com> and <adrian.herrera@anu.edu.au>\n");
+
+} else
+
+  be_quiet = 1;
+
+#if LLVM_VERSION_MAJOR >= 11                        /* use new pass manager */
+  auto PA = PreservedAnalyses::all();
+#endif
+
+// if (!getenv("AFL_HASTE_MODE")) {
+
   LLVMContext &C = M.getContext();
 
   IntegerType *Int8Ty = IntegerType::getInt8Ty(C);
@@ -212,10 +230,6 @@ bool AFLCoverage::runOnModule(Module &M) {
   u32             rand_seed;
   unsigned int    cur_loc = 0;
 
-#if LLVM_VERSION_MAJOR >= 11                        /* use new pass manager */
-  auto PA = PreservedAnalyses::all();
-#endif
-
   /* Setup random() so we get Actually Random(TM) outputs from AFL_R() */
   gettimeofday(&tv, &tz);
   rand_seed = tv.tv_sec ^ tv.tv_usec ^ getpid();
@@ -225,16 +239,16 @@ bool AFLCoverage::runOnModule(Module &M) {
 
   setvbuf(stdout, NULL, _IONBF, 0);
 
-  if (getenv("AFL_DEBUG")) debug = 1;
+  // if (getenv("AFL_DEBUG")) debug = 1;
 
-  if ((isatty(2) && !getenv("AFL_QUIET")) || getenv("AFL_DEBUG") != NULL) {
+  // if ((isatty(2) && !getenv("AFL_QUIET")) || getenv("AFL_DEBUG") != NULL) {
 
-    SAYF(cCYA "afl-llvm-pass" VERSION cRST
-              " by <lszekeres@google.com> and <adrian.herrera@anu.edu.au>\n");
+  //   SAYF(cCYA "afl-llvm-pass" VERSION cRST
+  //             " by <lszekeres@google.com> and <adrian.herrera@anu.edu.au>\n");
 
-  } else
+  // } else
 
-    be_quiet = 1;
+  //   be_quiet = 1;
 
   /*
     char *ptr;
@@ -1079,6 +1093,22 @@ bool AFLCoverage::runOnModule(Module &M) {
     }
 
   }
+//}
+
+// else {
+//   if (!be_quiet) {
+//     char modeline[100];
+//     snprintf(modeline, sizeof(modeline), "haste, %s%s%s%s%s%s",
+//               getenv("AFL_HARDEN") ? "hardened" : "non-hardened",
+//               getenv("AFL_USE_ASAN") ? ", ASAN" : "",
+//               getenv("AFL_USE_MSAN") ? ", MSAN" : "",
+//               getenv("AFL_USE_CFISAN") ? ", CFISAN" : "",
+//               getenv("AFL_USE_TSAN") ? ", TSAN" : "",
+//               getenv("AFL_USE_UBSAN") ? ", UBSAN" : "");
+
+//       OKF(" no need instrument (%s mode).", modeline);
+//   }
+// }
 
 #if LLVM_VERSION_MAJOR >= 11                        /* use new pass manager */
   return PA;

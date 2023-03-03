@@ -472,6 +472,7 @@ static void edit_params(u32 argc, char **argv, char **envp) {
 
   }
 
+
   if (compiler_mode == GCC || compiler_mode == CLANG) {
 
     cc_params[cc_par_cnt++] = "-B";

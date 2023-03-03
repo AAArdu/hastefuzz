@@ -782,8 +782,8 @@ typedef struct afl_state {
   afl_forkserver_t hastemode_fsrv;
   u8 *hastemode_records_map;
   u8 haste_mode;
-  u8 *hastemode_out_buf;
-  u32 hastemode_len;
+  // u8 *hastemode_out_buf;
+  // u32 hastemode_len;
 
 } afl_state_t;
 

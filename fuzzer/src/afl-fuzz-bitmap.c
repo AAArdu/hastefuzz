@@ -510,8 +510,11 @@ save_if_interesting(afl_state_t *afl, void *mem, u32 len, u8 fault) {
 
       /* run hastemode binary */
       
-      if (likely(len = write_to_testcase(afl, (void **)&(afl->hastemode_out_buf), afl->hastemode_len, 0)) != 0) {
-        fault = fuzz_run_target(afl, &afl->hastemode_fsrv, afl->fsrv.exec_tmout);
+      // if (likely(len = write_to_testcase(afl, (void **)&(afl->hastemode_out_buf), afl->hastemode_len, 0)) != 0) {
+      //   fault = fuzz_run_target(afl, &afl->hastemode_fsrv, afl->fsrv.exec_tmout);
+      // }
+      if (likely(len = write_to_testcase(afl, &mem, len, 0)) != 0) {
+        fault = fuzz_run_target(afl, &afl->hastemode_fsrv, afl->hang_tmout);
       }
 
       /* restore */

@@ -1040,10 +1040,10 @@ common_fuzz_stuff(afl_state_t *afl, u8 *out_buf, u32 len) {
 
   fault = fuzz_run_target(afl, &afl->fsrv, afl->fsrv.exec_tmout);
 
-  if (afl->haste_mode == 2) {
-    afl->hastemode_out_buf = out_buf;
-    afl->hastemode_len = len;
-  }
+  // if (afl->haste_mode == 2) {
+  //   afl->hastemode_out_buf = out_buf;
+  //   afl->hastemode_len = len;
+  // }
 
   if (afl->stop_soon) { return 1; }
 
